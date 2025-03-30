@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  BadRequestException,
   Param,
   Post,
   Put,
@@ -13,18 +14,16 @@ import {
 } from '@nestjs/common';
 import { CreateBlogUseCase } from '../application/use-cases/create-blog.use-case';
 import { GetAllBlogUseCase } from '../application/use-cases/get-all-blogs.use-case';
-import { GetBlogByIdUseCase } from '../application/use-cases/get-blog-by-id.use-case';
 import { UpdateBlogUseCase } from '../application/use-cases/update-blog.use-case';
 import { DeleteBlogUseCase } from '../application/use-cases/delete-blog.use-case';
-import { CreateBlogDto } from './dto/create-blog.dto';
-import { UpdateBlogDto } from './dto/update-blog.dto';
 import { BlogView } from '../domain/models/blog-view.interface';
 import { CreateBlogDomainDto } from '../domain/dto/create-blog.domain.dto';
-import { UpdateBlogDomainDto } from '../domain/dto/update-blog.domain.dto';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BlogQueryParams } from '../domain/dto/blog-query-params.dto';
+import { GetBlogByIdUseCase } from '../application/use-cases/get-blog.use-case';
+import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
+import { PaginatedResult } from '../../../../core/infrastructure/pagination';
+import { BlogEntity } from '../domain/blog.entity';
+import { UpdateBlogDto } from '../domain/dto/update-blog.dto';
 
-@ApiTags('Blogs')
 @Controller('blogs')
 export class BlogsController {
   constructor(
@@ -36,23 +35,24 @@ export class BlogsController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Returns blogs with paging' })
-  @ApiResponse({ status: 200, description: 'Success', type: [BlogView] })
-  async getAll(@Query() query: BlogQueryParams): Promise<BlogView[] | undefined> {
-    const result = await this.getAllBlogsUseCase.execute();
+  async getAll(@Query() query: BaseQueryParams): Promise<PaginatedResult<BlogView>> {
+    const result = await this.getAllBlogsUseCase.execute(query);
 
     if (result.isFailure()) {
       throw new NotFoundException(result.error);
+    }
+
+    // Гарантируем, что value не undefined - если result.isFailure() == false,
+    // то value должно быть определено
+    if (!result.value) {
+      throw new BadRequestException('Unexpected error: result value is undefined');
     }
 
     return result.value;
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create new blog' })
-  @ApiResponse({ status: 201, description: 'The blog has been successfully created', type: BlogView })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  async createBlog(@Body() createBlogDto: CreateBlogDto): Promise<BlogView> {
+  async createBlog(@Body() createBlogDto: BlogEntity): Promise<BlogView> {
     // Преобразуем DTO запроса в доменный DTO
     const domainDto: CreateBlogDomainDto = {
       name: createBlogDto.name,
@@ -62,41 +62,39 @@ export class BlogsController {
 
     const result = await this.createBlogUseCase.execute(domainDto);
 
-    if (result.isFailure) {
+    if (result.isFailure()) {
       throw new NotFoundException(result.error);
+    }
+
+    if (!result.value) {
+      throw new BadRequestException('Unexpected error: result value is undefined');
     }
 
     return result.value;
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Returns blog by id' })
-  @ApiParam({ name: 'id', description: 'Blog ID' })
-  @ApiResponse({ status: 200, description: 'Success', type: BlogView })
-  @ApiResponse({ status: 404, description: 'Blog not found' })
   async getBlogById(@Param('id') id: string): Promise<BlogView> {
     const result = await this.getBlogByIdUseCase.execute(id);
 
-    if (result.isFailure) {
+    if (result.isFailure()) {
       throw new NotFoundException(result.error);
+    }
+
+    if (!result.value) {
+      throw new BadRequestException('Unexpected error: result value is undefined');
     }
 
     return result.value;
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update existing Blog by id with InputModel' })
-  @ApiParam({ name: 'id', description: 'Blog ID' })
-  @ApiResponse({ status: 204, description: 'No Content' })
-  @ApiResponse({ status: 404, description: 'Blog not found' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ): Promise<void> {
-    // Преобразуем DTO запроса в доменный DTO
-    const domainDto: UpdateBlogDomainDto = {
+    const domainDto: CreateBlogDomainDto = {
       name: updateBlogDto.name,
       description: updateBlogDto.description,
       websiteUrl: updateBlogDto.websiteUrl,
@@ -104,21 +102,17 @@ export class BlogsController {
 
     const result = await this.updateBlogUseCase.execute(id, domainDto);
 
-    if (result.isFailure) {
+    if (result.isFailure()) {
       throw new NotFoundException(result.error);
     }
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete blog specified by id' })
-  @ApiParam({ name: 'id', description: 'Blog ID' })
-  @ApiResponse({ status: 204, description: 'No Content' })
-  @ApiResponse({ status: 404, description: 'Blog not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('id') id: string): Promise<void> {
     const result = await this.deleteBlogUseCase.execute(id);
 
-    if (result.isFailure) {
+    if (result.isFailure()) {
       throw new NotFoundException(result.error);
     }
   }

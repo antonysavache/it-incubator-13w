@@ -1,21 +1,55 @@
 import { Type } from 'class-transformer';
-
-//базовый класс для query параметров с пагинацией
-//значения по-умолчанию применятся автоматически при настройке глобального ValidationPipe в main.ts
-export class BaseQueryParams {
-  //для трансформации в number
-  @Type(() => Number)
-  pageNumber: number = 1;
-  @Type(() => Number)
-  pageSize: number = 10;
-  sortDirection: SortDirection = SortDirection.Desc;
-
-  calculateSkip() {
-    return (this.pageNumber - 1) * this.pageSize;
-  }
-}
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export enum SortDirection {
   Asc = 'asc',
   Desc = 'desc',
+}
+
+export class BaseQueryParams {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  pageNumber: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  pageSize: number = 10;
+
+  @IsOptional()
+  @IsString()
+  sortBy: string = 'createdAt';
+
+  @IsOptional()
+  @IsString()
+  sortDirection: SortDirection = SortDirection.Desc;
+
+  @IsOptional()
+  @IsString()
+  searchTerm?: string;
+
+  calculateSkip(): number {
+    return (this.pageNumber - 1) * this.pageSize;
+  }
+
+  getSortOptions(): Record<string, 1 | -1> {
+    return { [this.sortBy]: this.sortDirection === SortDirection.Asc ? 1 : -1 };
+  }
+
+  getSearchFilter(searchFields: string[]): any {
+    if (!this.searchTerm) return {};
+
+    if (searchFields.length > 0) {
+      return {
+        $or: searchFields.map(field => ({
+          [field]: { $regex: this.searchTerm, $options: 'i' }
+        }))
+      };
+    }
+
+    return {};
+  }
 }

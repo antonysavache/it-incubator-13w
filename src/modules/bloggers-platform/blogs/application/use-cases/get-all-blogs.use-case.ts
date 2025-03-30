@@ -2,6 +2,8 @@ import { BlogView } from '../../domain/models/blog-view.interface';
 import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs-query.repository';
 import { Injectable } from '@nestjs/common';
 import { ToResult } from '../../../../../core/infrastructure/result';
+import { BaseQueryParams } from '../../../../../core/dto/base.query-params.input-dto';
+import { PaginatedResult } from '../../../../../core/infrastructure/pagination';
 
 @Injectable()
 export class GetAllBlogUseCase {
@@ -9,20 +11,10 @@ export class GetAllBlogUseCase {
     private blogsQueryRepository: BlogsQueryRepository,
   ) {}
 
-  async execute(): Promise<ToResult<BlogView[]>> {
+  async execute(params: BaseQueryParams): Promise<ToResult<PaginatedResult<BlogView>>> {
     try {
-      const blogs = await this.blogsQueryRepository.getAll();
-
-      const blogViews: BlogView[] = blogs.map(blog => ({
-        id: blog._id.toString(),
-        name: blog.name,
-        description: blog.description,
-        websiteUrl: blog.websiteUrl,
-        createdAt: new Date(blog.createdAt),
-        isMembership: blog.isMembership
-      }));
-
-      return ToResult.ok(blogViews);
+      const paginatedResult = await this.blogsQueryRepository.getAllWithPagination(params);
+      return ToResult.ok(paginatedResult);
     } catch (error) {
       return ToResult.fail(error.message);
     }
