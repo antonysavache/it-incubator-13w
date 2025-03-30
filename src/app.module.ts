@@ -9,8 +9,10 @@ import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
-    // MongooseModule.forRoot('mongodb://localhost/nest-bloggers-platform'), //TODO: move to env. will be in the following lessons
-    UserAccountsModule, //все модули должны быть заимпортированы в корневой модуль, либо напрямую, либо по цепочке (через другие модули)
+    MongooseModule.forRoot(
+      'mongodb+srv://admin:admin@lessons.x4ym2.mongodb.net/?retryWrites=true&w=majority&appName=lessons',
+    ),
+    UserAccountsModule,
     TestingModule,
     BloggersPlatformModule,
     CoreModule,

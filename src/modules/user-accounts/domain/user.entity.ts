@@ -20,9 +20,7 @@ export class User {
   login: string;
 
   /**
-   * Password hash for authentication
-   * @type {string}
-   * @required
+   * for authentication
    */
   @Prop({ type: String, required: true })
   passwordHash: string;

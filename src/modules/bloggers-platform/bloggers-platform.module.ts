@@ -1,10 +1,17 @@
 import { Module } from '@nestjs/common';
 import { UserAccountsModule } from '../user-accounts/user-accounts.module';
-import { BlogsService } from './blogs.service';
+import { BlogsCommandRepository } from './blogs/infrastructure/repositories/blogs-command.repository';
+import { CreateBlogUseCase } from './blogs/application/use-cases/create-blog.use-case';
+import { DeleteBlogUseCase } from './blogs/application/use-cases/delete-blog.use-case';
+import { GetAllBlogUseCase } from './blogs/application/use-cases/get-all-blogs.use-case';
+import { GetBlogByIdUseCase } from './blogs/application/use-cases/get-blog.use-case';
+import { UpdateBlogUseCase } from './blogs/application/use-cases/update-blog.use-case';
 
-//тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
+const useCases = [CreateBlogUseCase, DeleteBlogUseCase, GetAllBlogUseCase, GetBlogByIdUseCase, UpdateBlogUseCase];
+const repositories = [BlogsCommandRepository];
+
 @Module({
   imports: [UserAccountsModule],
-  providers: [BlogsService],
+  providers: [...repositories, ...useCases],
 })
 export class BloggersPlatformModule {}
