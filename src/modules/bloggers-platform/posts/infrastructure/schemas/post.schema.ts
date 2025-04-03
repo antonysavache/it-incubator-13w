@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 @Schema({ 
   timestamps: true,
@@ -12,21 +12,24 @@ import { Document } from 'mongoose';
     }
   } 
 })
-export class BlogDocument extends Document {
+export class PostDocument extends Document {
   @Prop({ required: true })
-  name: string;
+  title: string;
 
   @Prop({ required: true })
-  description: string;
+  shortDescription: string;
 
   @Prop({ required: true })
-  websiteUrl: string;
+  content: string;
+
+  @Prop({ required: true })
+  blogId: string;
+
+  @Prop({ required: true })
+  blogName: string;
 
   @Prop({ required: true, default: Date.now })
   createdAt: Date;
-  
-  @Prop({ required: true, default: false })
-  isMembership: boolean;
 }
 
-export const BlogSchema = SchemaFactory.createForClass(BlogDocument);
+export const PostSchema = SchemaFactory.createForClass(PostDocument);

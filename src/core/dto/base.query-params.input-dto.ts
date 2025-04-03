@@ -30,6 +30,18 @@ export class BaseQueryParams {
   @IsOptional()
   @IsString()
   searchTerm?: string;
+  
+  @IsOptional()
+  @IsString()
+  searchNameTerm?: string;
+  
+  @IsOptional()
+  @IsString()
+  searchLoginTerm?: string;
+  
+  @IsOptional()
+  @IsString()
+  searchEmailTerm?: string;
 
   calculateSkip(): number {
     return (this.pageNumber - 1) * this.pageSize;
@@ -40,12 +52,14 @@ export class BaseQueryParams {
   }
 
   getSearchFilter(searchFields: string[]): any {
-    if (!this.searchTerm) return {};
+    if (!this.searchTerm && !this.searchNameTerm) return {};
 
-    if (searchFields.length > 0) {
+    const searchTerm = this.searchTerm || this.searchNameTerm;
+    
+    if (searchFields.length > 0 && searchTerm) {
       return {
         $or: searchFields.map(field => ({
-          [field]: { $regex: this.searchTerm, $options: 'i' }
+          [field]: { $regex: searchTerm, $options: 'i' }
         }))
       };
     }

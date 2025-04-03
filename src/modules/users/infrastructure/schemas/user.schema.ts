@@ -8,25 +8,23 @@ import { Document } from 'mongoose';
       ret.id = ret._id;
       delete ret._id;
       delete ret.__v;
+      delete ret.passwordHash;
       return ret;
     }
   } 
 })
-export class BlogDocument extends Document {
-  @Prop({ required: true })
-  name: string;
+export class UserDocument extends Document {
+  @Prop({ required: true, unique: true })
+  login: string;
+
+  @Prop({ required: true, unique: true })
+  email: string;
 
   @Prop({ required: true })
-  description: string;
-
-  @Prop({ required: true })
-  websiteUrl: string;
+  passwordHash: string;
 
   @Prop({ required: true, default: Date.now })
   createdAt: Date;
-  
-  @Prop({ required: true, default: false })
-  isMembership: boolean;
 }
 
-export const BlogSchema = SchemaFactory.createForClass(BlogDocument);
+export const UserSchema = SchemaFactory.createForClass(UserDocument);

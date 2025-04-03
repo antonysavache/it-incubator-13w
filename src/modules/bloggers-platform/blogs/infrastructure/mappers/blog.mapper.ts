@@ -11,7 +11,8 @@ export class BlogMapper {
       name: blog.name,
       description: blog.description,
       websiteUrl: blog.websiteUrl,
-      createdAt: blog.createdAt
+      createdAt: blog.createdAt,
+      isMembership: blog.isMembership
     };
   }
 
@@ -22,7 +23,8 @@ export class BlogMapper {
         name: blogDocument.name,
         description: blogDocument.description,
         websiteUrl: blogDocument.websiteUrl,
-        createdAt: blogDocument.createdAt
+        createdAt: blogDocument.createdAt,
+        isMembership: blogDocument.isMembership
       },
       blogDocument._id?.toString()
     );
@@ -38,7 +40,9 @@ export class BlogMapper {
       id: blog.id,
       name: blog.name,
       description: blog.description,
-      websiteUrl: blog.websiteUrl
+      websiteUrl: blog.websiteUrl,
+      createdAt: blog.createdAt.toISOString(),
+      isMembership: blog.isMembership
     };
   }
 
@@ -48,7 +52,9 @@ export class BlogMapper {
       id: blogDocument._id?.toString() || '',
       name: blogDocument.name,
       description: blogDocument.description,
-      websiteUrl: blogDocument.websiteUrl
+      websiteUrl: blogDocument.websiteUrl,
+      createdAt: blogDocument.createdAt.toISOString(),
+      isMembership: blogDocument.isMembership
     };
   }
 }

@@ -3,5 +3,5 @@ export interface CreatePostDomainDto {
   shortDescription: string;
   content: string;
   blogId: string;
-  blogName: string;
+  blogName?: string; // Optional because it can be derived
 }
