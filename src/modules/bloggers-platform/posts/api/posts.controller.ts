@@ -19,10 +19,10 @@ import { DeletePostUseCase } from '../application/use-cases/delete-post.use-case
 import { PostView } from '../domain/models/post-view.interface';
 import { CreatePostDomainDto } from '../domain/dto/create-post.domain.dto';
 import { GetPostByIdUseCase } from '../application/use-cases/get-post.use-case';
-import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
 import { PaginatedResult } from '../../../../core/infrastructure/pagination';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { QueryParamsDto } from '../../../../core/dto/query-params.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -35,7 +35,7 @@ export class PostsController {
   ) {}
 
   @Get()
-  async getAll(@Query() query: BaseQueryParams): Promise<PaginatedResult<PostView>> {
+  async getAll(@Query() query: QueryParamsDto): Promise<PaginatedResult<PostView>> {
     const result = await this.getAllPostsUseCase.execute(query);
 
     if (result.isFailure()) {

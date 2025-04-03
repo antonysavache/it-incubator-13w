@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { BaseQueryParams } from '../../../../../core/dto/base.query-params.input-dto';
+import { QueryParamsDto } from '../../../../../core/dto/query-params.dto';
 import { PaginatedResult } from '../../../../../core/infrastructure/pagination';
 import { ToResult } from '../../../../../core/infrastructure/result';
-import { BlogView } from '../../domain/models/blog-view.interface';
+import { ViewBlogModel } from '../../models/blog.models';
 import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs-query.repository';
 
 @Injectable()
 export class GetAllBlogUseCase {
   constructor(private blogsQueryRepository: BlogsQueryRepository) {}
 
-  async execute(params: BaseQueryParams): Promise<ToResult<PaginatedResult<BlogView>>> {
+  async execute(params: QueryParamsDto): Promise<ToResult<PaginatedResult<ViewBlogModel>>> {
     return await this.blogsQueryRepository.findAll(params);
   }
 }

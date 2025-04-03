@@ -11,12 +11,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { PostView } from '../../posts/domain/models/post-view.interface';
-import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
 import { PaginatedResult } from '../../../../core/infrastructure/pagination';
 import { CreatePostDto } from '../../posts/api/dto/create-post.dto';
 import { CreatePostUseCase } from '../../posts/application/use-cases/create-post.use-case';
 import { GetBlogPostsUseCase } from '../../posts/application/use-cases/get-blog-posts.use-case';
 import { CreatePostDomainDto } from '../../posts/domain/dto/create-post.domain.dto';
+import { QueryParamsDto } from '../../../../core/dto/query-params.dto';
 
 @Controller('blogs')
 export class BlogPostsController {
@@ -28,7 +28,7 @@ export class BlogPostsController {
   @Get(':blogId/posts')
   async getBlogPosts(
     @Param('blogId') blogId: string,
-    @Query() query: BaseQueryParams
+    @Query() query: QueryParamsDto
   ): Promise<PaginatedResult<PostView>> {
     const result = await this.getBlogPostsUseCase.execute(blogId, query);
 

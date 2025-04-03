@@ -18,14 +18,12 @@ export class UpdatePostUseCase {
 
   async execute(id: string, dto: CreatePostDomainDto): Promise<ToResult<void>> {
     try {
-      // First, check if post exists
       const postResult = await this.postsQueryRepository.getPostById(id);
       
       if (postResult.isFailure()) {
         return ToResult.fail(postResult.error || `Post with id ${id} not found`);
       }
       
-      // Check if blog exists
       const blogResult = await this.blogsQueryRepository.getBlogById(dto.blogId);
       
       if (blogResult.isFailure()) {
@@ -35,7 +33,6 @@ export class UpdatePostUseCase {
       const blog = blogResult.value!;
       const existingPost = postResult.value!;
       
-      // Create updated domain entity with the same ID and preserving createdAt
       const updatedPost = Post.create({
         title: dto.title,
         shortDescription: dto.shortDescription,
@@ -45,7 +42,6 @@ export class UpdatePostUseCase {
         createdAt: new Date(existingPost.createdAt)
       }, id);
       
-      // Save to repository
       await this.postsCommandRepository.save(updatedPost);
       
       return ToResult.ok(undefined);

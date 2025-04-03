@@ -24,11 +24,9 @@ export class Blog {
   }
 
   static create(props: BlogProps, id?: string): Blog {
-    // Here we could add domain validation rules if needed
     return new Blog(props, id);
   }
 
-  // Getters
   get id(): string | undefined {
     return this._id;
   }
@@ -53,7 +51,6 @@ export class Blog {
     return this._isMembership;
   }
 
-  // For serialization and data transfer
   toObject() {
     return {
       id: this._id,

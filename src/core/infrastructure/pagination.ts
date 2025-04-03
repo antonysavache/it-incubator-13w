@@ -1,4 +1,3 @@
-// Common pagination result format for the application
 export class PaginatedResult<T> {
   items: T[];
   totalCount: number;

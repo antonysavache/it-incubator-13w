@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Blog } from '../../domain/blog.domain';
 import { BlogDocument } from '../schemas/blog.schema';
-import { BlogView } from '../../domain/models/blog-view.interface';
+import { ViewBlogModel } from '../../models/blog.models';
 
 @Injectable()
 export class BlogMapper {
-  // Map from domain to persistence
   toPersistence(blog: Blog): any {
     return {
       name: blog.name,
@@ -16,7 +15,6 @@ export class BlogMapper {
     };
   }
 
-  // Map from persistence to domain
   toDomain(blogDocument: BlogDocument): Blog {
     return Blog.create(
       {
@@ -30,8 +28,7 @@ export class BlogMapper {
     );
   }
 
-  // Map from domain to view model
-  toView(blog: Blog): BlogView {
+  toView(blog: Blog): ViewBlogModel {
     if (!blog.id) {
       throw new Error('Blog ID is required for view model');
     }
@@ -46,8 +43,7 @@ export class BlogMapper {
     };
   }
 
-  // Map from persistence directly to view model
-  documentToView(blogDocument: BlogDocument): BlogView {
+  documentToView(blogDocument: BlogDocument): ViewBlogModel {
     return {
       id: blogDocument._id?.toString() || '',
       name: blogDocument.name,

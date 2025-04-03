@@ -3,27 +3,28 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseQueryRepository } from '../../../../../core/infrastructure/repositories/base-query.repository';
 import { BlogDocument } from '../schemas/blog.schema';
-import { BlogView } from '../../domain/models/blog-view.interface';
 import { BlogMapper } from '../mappers/blog.mapper';
-import { BaseQueryParams } from '../../../../../core/dto/base.query-params.input-dto';
+import { QueryParamsDto } from '../../../../../core/dto/query-params.dto';
 import { PaginatedResult } from '../../../../../core/infrastructure/pagination';
 import { ToResult } from '../../../../../core/infrastructure/result';
+import { ViewBlogModel } from '../../models/blog.models';
+import { QueryParamsService } from '../../../../../core/services/query-params.service';
 
 @Injectable()
-export class BlogsQueryRepository extends BaseQueryRepository<BlogDocument, BlogView> {
+export class BlogsQueryRepository extends BaseQueryRepository<BlogDocument, ViewBlogModel> {
   constructor(
     @InjectModel('BlogDocument') protected blogModel: Model<BlogDocument>,
-    private blogMapper: BlogMapper
+    private blogMapper: BlogMapper,
+    protected queryParamsService: QueryParamsService
   ) {
-    super(blogModel);
+    super(blogModel, queryParamsService);
   }
 
-  mapToView(entity: BlogDocument): BlogView {
+  mapToView(entity: BlogDocument): ViewBlogModel {
     return this.blogMapper.documentToView(entity);
   }
 
-  // Overload with a separate method name to avoid conflicts with BaseQueryRepository
-  async getBlogById(id: string): Promise<ToResult<BlogView>> {
+  async getBlogById(id: string): Promise<ToResult<ViewBlogModel>> {
     try {
       const blog = await this.findById(id);
       
@@ -37,7 +38,7 @@ export class BlogsQueryRepository extends BaseQueryRepository<BlogDocument, Blog
     }
   }
 
-  async findAll(params: BaseQueryParams): Promise<ToResult<PaginatedResult<BlogView>>> {
+  async findAll(params: QueryParamsDto): Promise<ToResult<PaginatedResult<ViewBlogModel>>> {
     try {
       const searchFields = ['name', 'description', 'websiteUrl'];
       const result = await this.getAllWithPagination(params, searchFields);

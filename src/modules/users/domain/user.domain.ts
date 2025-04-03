@@ -21,11 +21,9 @@ export class User {
   }
 
   static create(props: UserProps, id?: string): User {
-    // Here we could add domain validation rules if needed
     return new User(props, id);
   }
 
-  // Getters
   get id(): string | undefined {
     return this._id;
   }
@@ -46,7 +44,6 @@ export class User {
     return this._createdAt;
   }
 
-  // For serialization and data transfer
   toObject() {
     return {
       id: this._id,

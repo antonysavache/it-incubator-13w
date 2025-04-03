@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBlogDomainDto } from '../../domain/dto/create-blog.domain.dto';
-import { BlogView } from '../../domain/models/blog-view.interface';
 import { BlogsCommandRepository } from '../../infrastructure/repositories/blogs-command.repository';
 import { ToResult } from '../../../../../core/infrastructure/result';
 import { Blog } from '../../domain/blog.domain';
 import { BlogMapper } from '../../infrastructure/mappers/blog.mapper';
+import { CreateBlogModel, ViewBlogModel } from '../../models/blog.models';
 
 @Injectable()
 export class CreateBlogUseCase {
@@ -13,19 +12,16 @@ export class CreateBlogUseCase {
     private blogMapper: BlogMapper
   ) {}
 
-  async execute(dto: CreateBlogDomainDto): Promise<ToResult<BlogView>> {
+  async execute(model: CreateBlogModel): Promise<ToResult<ViewBlogModel>> {
     try {
-      // Create a domain entity
       const blog = Blog.create({
-        name: dto.name,
-        description: dto.description,
-        websiteUrl: dto.websiteUrl
+        name: model.name,
+        description: model.description,
+        websiteUrl: model.websiteUrl
       });
       
-      // Save to repository
       const savedBlogDocument = await this.blogsCommandRepository.save(blog);
       
-      // Map to domain then to view
       const savedBlog = this.blogMapper.toDomain(savedBlogDocument);
       const blogView = this.blogMapper.toView(savedBlog);
 

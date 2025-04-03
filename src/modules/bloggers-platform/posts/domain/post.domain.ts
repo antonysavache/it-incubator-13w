@@ -27,11 +27,9 @@ export class Post {
   }
 
   static create(props: PostProps, id?: string): Post {
-    // Here we could add domain validation rules if needed
     return new Post(props, id);
   }
 
-  // Getters
   get id(): string | undefined {
     return this._id;
   }
@@ -60,7 +58,6 @@ export class Post {
     return this._createdAt;
   }
 
-  // For serialization and data transfer
   toObject() {
     return {
       id: this._id,

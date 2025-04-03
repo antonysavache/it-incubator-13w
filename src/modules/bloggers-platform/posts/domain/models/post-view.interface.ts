@@ -1,7 +1,7 @@
 export interface ExtendedLikesInfo {
   likesCount: number;
   dislikesCount: number;
-  myStatus: string; // 'Like' | 'Dislike' | 'None'
+  myStatus: string;
   newestLikes: any[];
 }
 

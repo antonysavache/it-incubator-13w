@@ -17,9 +17,9 @@ import { DeleteUserUseCase } from '../application/use-cases/delete-user.use-case
 import { UserView } from '../domain/models/user-view.interface';
 import { CreateUserDomainDto } from '../domain/dto/create-user.domain.dto';
 import { GetUserByIdUseCase } from '../application/use-cases/get-user.use-case';
-import { BaseQueryParams } from '../../../core/dto/base.query-params.input-dto';
 import { PaginatedResult } from '../../../core/infrastructure/pagination';
 import { CreateUserDto } from './dto/create-user.dto';
+import { QueryParamsDto } from '../../../core/dto/query-params.dto';
 
 @Controller('users')
 export class UsersController {
@@ -31,7 +31,7 @@ export class UsersController {
   ) {}
 
   @Get()
-  async getAll(@Query() query: BaseQueryParams): Promise<PaginatedResult<UserView>> {
+  async getAll(@Query() query: QueryParamsDto): Promise<PaginatedResult<UserView>> {
     const result = await this.getAllUsersUseCase.execute(query);
 
     if (result.isFailure()) {

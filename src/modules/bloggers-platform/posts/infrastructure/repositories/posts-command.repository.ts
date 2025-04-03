@@ -27,11 +27,6 @@ export class PostsCommandRepository extends BaseCommandRepository<PostDocument, 
     return post.id;
   }
 
-  /**
-   * Delete all posts for a specific blog
-   * @param blogId Blog ID
-   * @returns Number of deleted posts
-   */
   async deleteAllByBlogId(blogId: string): Promise<number> {
     const result = await this.model.deleteMany({ blogId }).exec();
     return result.deletedCount;

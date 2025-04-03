@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../../domain/user.domain';
 import { UserDocument } from '../schemas/user.schema';
-import { UserView } from '../../domain/models/user-view.interface';
+import { ViewUserModel } from '../../models/user.models';
 
 @Injectable()
 export class UserMapper {
-  // Map from domain to persistence
   toPersistence(user: User): any {
     return {
       login: user.login,
@@ -15,7 +14,6 @@ export class UserMapper {
     };
   }
 
-  // Map from persistence to domain
   toDomain(userDocument: UserDocument): User {
     return User.create(
       {
@@ -28,8 +26,7 @@ export class UserMapper {
     );
   }
 
-  // Map from domain to view model
-  toView(user: User): UserView {
+  toView(user: User): ViewUserModel {
     if (!user.id) {
       throw new Error('User ID is required for view model');
     }
@@ -42,8 +39,7 @@ export class UserMapper {
     };
   }
 
-  // Map from persistence directly to view model
-  documentToView(userDocument: UserDocument): UserView {
+  documentToView(userDocument: UserDocument): ViewUserModel {
     return {
       id: userDocument._id?.toString() || '',
       login: userDocument.login,

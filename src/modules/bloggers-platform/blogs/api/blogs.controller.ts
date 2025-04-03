@@ -16,13 +16,10 @@ import { CreateBlogUseCase } from '../application/use-cases/create-blog.use-case
 import { GetAllBlogUseCase } from '../application/use-cases/get-all-blogs.use-case';
 import { UpdateBlogUseCase } from '../application/use-cases/update-blog.use-case';
 import { DeleteBlogUseCase } from '../application/use-cases/delete-blog.use-case';
-import { BlogView } from '../domain/models/blog-view.interface';
-import { CreateBlogDomainDto } from '../domain/dto/create-blog.domain.dto';
 import { GetBlogByIdUseCase } from '../application/use-cases/get-blog.use-case';
-import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
+import { QueryParamsDto } from '../../../../core/dto/query-params.dto';
 import { PaginatedResult } from '../../../../core/infrastructure/pagination';
-import { CreateBlogDto } from './dto/create-blog.dto';
-import { UpdateBlogDto } from '../domain/dto/update-blog.dto';
+import { CreateBlogModel, UpdateBlogModel, ViewBlogModel } from '../models/blog.models';
 
 @Controller('blogs')
 export class BlogsController {
@@ -35,7 +32,7 @@ export class BlogsController {
   ) {}
 
   @Get()
-  async getAll(@Query() query: BaseQueryParams): Promise<PaginatedResult<BlogView>> {
+  async getAll(@Query() query: QueryParamsDto): Promise<PaginatedResult<ViewBlogModel>> {
     const result = await this.getAllBlogsUseCase.execute(query);
 
     if (result.isFailure()) {
@@ -50,14 +47,8 @@ export class BlogsController {
   }
 
   @Post()
-  async createBlog(@Body() createBlogDto: CreateBlogDto): Promise<BlogView> {
-    const domainDto: CreateBlogDomainDto = {
-      name: createBlogDto.name,
-      description: createBlogDto.description,
-      websiteUrl: createBlogDto.websiteUrl,
-    };
-
-    const result = await this.createBlogUseCase.execute(domainDto);
+  async createBlog(@Body() createBlogModel: CreateBlogModel): Promise<ViewBlogModel> {
+    const result = await this.createBlogUseCase.execute(createBlogModel);
 
     if (result.isFailure()) {
       throw new NotFoundException(result.error);
@@ -71,7 +62,7 @@ export class BlogsController {
   }
 
   @Get(':id')
-  async getBlogById(@Param('id') id: string): Promise<BlogView> {
+  async getBlogById(@Param('id') id: string): Promise<ViewBlogModel> {
     const result = await this.getBlogByIdUseCase.execute(id);
 
     if (result.isFailure()) {
@@ -89,15 +80,9 @@ export class BlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,
-    @Body() updateBlogDto: UpdateBlogDto,
+    @Body() updateBlogModel: UpdateBlogModel,
   ): Promise<void> {
-    const domainDto: CreateBlogDomainDto = {
-      name: updateBlogDto.name,
-      description: updateBlogDto.description,
-      websiteUrl: updateBlogDto.websiteUrl,
-    };
-
-    const result = await this.updateBlogUseCase.execute(id, domainDto);
+    const result = await this.updateBlogUseCase.execute(id, updateBlogModel);
 
     if (result.isFailure()) {
       throw new NotFoundException(result.error);

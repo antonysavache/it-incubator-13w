@@ -1,8 +1,9 @@
 import { Global, Module } from '@nestjs/common';
+import { QueryParamsService } from './services/query-params.service';
 
-//глобальный модуль для провайдеров и модулей необходимых во всех частях приложения (например LoggerService, CqrsModule, etc...)
 @Global()
 @Module({
-  // exports: [GlobalLogerService],
+  providers: [QueryParamsService],
+  exports: [QueryParamsService],
 })
 export class CoreModule {}

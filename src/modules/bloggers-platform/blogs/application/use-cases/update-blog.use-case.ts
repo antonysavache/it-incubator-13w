@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ToResult } from '../../../../../core/infrastructure/result';
-import { CreateBlogDomainDto } from '../../domain/dto/create-blog.domain.dto';
 import { Blog } from '../../domain/blog.domain';
 import { BlogsCommandRepository } from '../../infrastructure/repositories/blogs-command.repository';
 import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs-query.repository';
 import { BlogMapper } from '../../infrastructure/mappers/blog.mapper';
+import { UpdateBlogModel } from '../../models/blog.models';
 
 @Injectable()
 export class UpdateBlogUseCase {
@@ -14,9 +14,8 @@ export class UpdateBlogUseCase {
     private blogMapper: BlogMapper
   ) {}
 
-  async execute(id: string, dto: CreateBlogDomainDto): Promise<ToResult<void>> {
+  async execute(id: string, model: UpdateBlogModel): Promise<ToResult<void>> {
     try {
-      // First, check if blog exists
       const blogResult = await this.blogsQueryRepository.getBlogById(id);
       
       if (blogResult.isFailure()) {
@@ -25,16 +24,14 @@ export class UpdateBlogUseCase {
       
       const existingBlog = blogResult.value!;
       
-      // Create updated domain entity with the same ID and createdAt
       const updatedBlog = Blog.create({
-        name: dto.name,
-        description: dto.description,
-        websiteUrl: dto.websiteUrl,
+        name: model.name,
+        description: model.description,
+        websiteUrl: model.websiteUrl,
         createdAt: new Date(existingBlog.createdAt),
         isMembership: existingBlog.isMembership
       }, id);
       
-      // Save to repository
       await this.blogsCommandRepository.save(updatedBlog);
       
       return ToResult.ok(undefined);

@@ -1,9 +1,13 @@
 import { Model, Document } from 'mongoose';
-import { BaseQueryParams } from '../../dto/base.query-params.input-dto';
+import { QueryParamsDto } from '../../dto/query-params.dto';
 import { PaginatedResult } from '../pagination';
+import { QueryParamsService } from '../../services/query-params.service';
 
 export abstract class BaseQueryRepository<T extends Document, V> {
-  constructor(protected model: Model<T>) {}
+  constructor(
+    protected model: Model<T>,
+    protected queryParamsService: QueryParamsService
+  ) {}
 
   abstract mapToView(entity: T): V;
 
@@ -16,15 +20,15 @@ export abstract class BaseQueryRepository<T extends Document, V> {
   }
 
   async getAllWithPagination(
-    params: BaseQueryParams,
+    params: QueryParamsDto,
     searchFields: string[] = [],
     additionalFilter: any = {}
   ): Promise<PaginatedResult<V>> {
     const { pageNumber, pageSize } = params;
-    const skip = params.calculateSkip();
-    const sortOptions = params.getSortOptions();
+    const skip = this.queryParamsService.calculateSkip(params);
+    const sortOptions = this.queryParamsService.getSortOptions(params);
 
-    const searchFilter = params.getSearchFilter(searchFields);
+    const searchFilter = this.queryParamsService.getSearchFilter(params, searchFields);
     const filter = { ...searchFilter, ...additionalFilter };
 
     const [items, totalCount] = await Promise.all([

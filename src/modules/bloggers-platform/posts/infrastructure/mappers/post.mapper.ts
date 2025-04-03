@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from '../../domain/post.domain';
 import { PostDocument } from '../schemas/post.schema';
-import { PostView } from '../../domain/models/post-view.interface';
+import { ViewPostModel } from '../../models/post.models';
 
 @Injectable()
 export class PostMapper {
-  // Map from domain to persistence
   toPersistence(post: Post): any {
     return {
       title: post.title,
@@ -23,7 +22,6 @@ export class PostMapper {
     };
   }
 
-  // Map from persistence to domain
   toDomain(postDocument: PostDocument): Post {
     return Post.create(
       {
@@ -38,8 +36,7 @@ export class PostMapper {
     );
   }
 
-  // Map from domain to view model
-  toView(post: Post): PostView {
+  toView(post: Post): ViewPostModel {
     if (!post.id) {
       throw new Error('Post ID is required for view model');
     }
@@ -61,8 +58,7 @@ export class PostMapper {
     };
   }
 
-  // Map from persistence directly to view model
-  documentToView(postDocument: PostDocument): PostView {
+  documentToView(postDocument: PostDocument): ViewPostModel {
     return {
       id: postDocument._id?.toString() || '',
       title: postDocument.title,

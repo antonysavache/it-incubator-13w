@@ -3,27 +3,28 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseQueryRepository } from '../../../../../core/infrastructure/repositories/base-query.repository';
 import { PostDocument } from '../schemas/post.schema';
-import { PostView } from '../../domain/models/post-view.interface';
 import { PostMapper } from '../mappers/post.mapper';
-import { BaseQueryParams } from '../../../../../core/dto/base.query-params.input-dto';
+import { QueryParamsDto } from '../../../../../core/dto/query-params.dto';
 import { PaginatedResult } from '../../../../../core/infrastructure/pagination';
 import { ToResult } from '../../../../../core/infrastructure/result';
+import { ViewPostModel } from '../../models/post.models';
+import { QueryParamsService } from '../../../../../core/services/query-params.service';
 
 @Injectable()
-export class PostsQueryRepository extends BaseQueryRepository<PostDocument, PostView> {
+export class PostsQueryRepository extends BaseQueryRepository<PostDocument, ViewPostModel> {
   constructor(
     @InjectModel('PostDocument') protected postModel: Model<PostDocument>,
-    private postMapper: PostMapper
+    private postMapper: PostMapper,
+    protected queryParamsService: QueryParamsService
   ) {
-    super(postModel);
+    super(postModel, queryParamsService);
   }
 
-  mapToView(entity: PostDocument): PostView {
+  mapToView(entity: PostDocument): ViewPostModel {
     return this.postMapper.documentToView(entity);
   }
 
-  // Overload with a separate method name to avoid conflicts with BaseQueryRepository
-  async getPostById(id: string): Promise<ToResult<PostView>> {
+  async getPostById(id: string): Promise<ToResult<ViewPostModel>> {
     try {
       const post = await this.findById(id);
       
@@ -37,7 +38,7 @@ export class PostsQueryRepository extends BaseQueryRepository<PostDocument, Post
     }
   }
 
-  async findAll(params: BaseQueryParams): Promise<ToResult<PaginatedResult<PostView>>> {
+  async findAll(params: QueryParamsDto): Promise<ToResult<PaginatedResult<ViewPostModel>>> {
     try {
       const searchFields = ['title', 'shortDescription', 'content'];
       const result = await this.getAllWithPagination(params, searchFields);
@@ -48,7 +49,7 @@ export class PostsQueryRepository extends BaseQueryRepository<PostDocument, Post
     }
   }
 
-  async findAllByBlogId(blogId: string, params: BaseQueryParams): Promise<ToResult<PaginatedResult<PostView>>> {
+  async findAllByBlogId(blogId: string, params: QueryParamsDto): Promise<ToResult<PaginatedResult<ViewPostModel>>> {
     try {
       const searchFields = ['title', 'shortDescription', 'content'];
       const additionalFilter = { blogId };

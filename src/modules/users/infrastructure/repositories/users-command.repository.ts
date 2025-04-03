@@ -27,20 +27,10 @@ export class UsersCommandRepository extends BaseCommandRepository<UserDocument, 
     return user.id;
   }
 
-  /**
-   * Find user by login
-   * @param login User login
-   * @returns User document or null if not found
-   */
   async findByLogin(login: string): Promise<UserDocument | null> {
     return this.model.findOne({ login }).exec();
   }
 
-  /**
-   * Find user by email
-   * @param email User email
-   * @returns User document or null if not found
-   */
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.model.findOne({ email }).exec();
   }
