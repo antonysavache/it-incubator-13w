@@ -13,7 +13,13 @@ export class PostMapper {
       content: post.content,
       blogId: post.blogId,
       blogName: post.blogName,
-      createdAt: post.createdAt
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: []
+      }
     };
   }
 
@@ -45,7 +51,13 @@ export class PostMapper {
       content: post.content,
       blogId: post.blogId,
       blogName: post.blogName,
-      createdAt: post.createdAt.toISOString()
+      createdAt: post.createdAt.toISOString(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: []
+      }
     };
   }
 
@@ -58,7 +70,13 @@ export class PostMapper {
       content: postDocument.content,
       blogId: postDocument.blogId,
       blogName: postDocument.blogName,
-      createdAt: postDocument.createdAt.toISOString()
+      createdAt: postDocument.createdAt.toISOString(),
+      extendedLikesInfo: postDocument.extendedLikesInfo || {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+        newestLikes: []
+      }
     };
   }
 }

@@ -69,7 +69,13 @@ export class Post {
       content: this._content,
       blogId: this._blogId,
       blogName: this._blogName,
-      createdAt: this._createdAt
+      createdAt: this._createdAt,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: "None",
+        newestLikes: []
+      }
     };
   }
 }

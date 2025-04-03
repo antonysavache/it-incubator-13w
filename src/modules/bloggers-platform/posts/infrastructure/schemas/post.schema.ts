@@ -30,6 +30,27 @@ export class PostDocument extends Document {
 
   @Prop({ required: true, default: Date.now })
   createdAt: Date;
+  
+  @Prop({ 
+    type: {
+      likesCount: { type: Number, default: 0 },
+      dislikesCount: { type: Number, default: 0 },
+      myStatus: { type: String, default: 'None' },
+      newestLikes: { type: Array, default: [] }
+    },
+    default: {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: 'None',
+      newestLikes: []
+    }
+  })
+  extendedLikesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: string;
+    newestLikes: any[];
+  };
 }
 
 export const PostSchema = SchemaFactory.createForClass(PostDocument);
