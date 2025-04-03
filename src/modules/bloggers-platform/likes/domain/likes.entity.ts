@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { CreateBlogDomainDto } from './dto/create-blog.domain.dto';
 import { HydratedDocument, Model } from 'mongoose';
+import { CreateBlogDomainDto } from '../../blogs/domain/dto/create-blog.domain.dto';
 
 @Schema()
 export class LikesEntity {

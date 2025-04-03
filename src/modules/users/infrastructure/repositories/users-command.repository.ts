@@ -4,47 +4,40 @@ import { Model } from 'mongoose';
 import { UserDocument } from '../schemas/user.schema';
 import { UserMapper } from '../mappers/user.mapper';
 import { User } from '../../domain/user.domain';
+import { BaseCommandRepository } from '../../../../core/infrastructure/repositories/base-command.repository';
 
 @Injectable()
-export class UsersCommandRepository {
+export class UsersCommandRepository extends BaseCommandRepository<UserDocument, User> {
   constructor(
-    @InjectModel('UserDocument') private userModel: Model<UserDocument>,
+    @InjectModel('UserDocument') protected userModel: Model<UserDocument>,
     private userMapper: UserMapper
-  ) {}
-
-  async save(user: User): Promise<UserDocument> {
-    const persistenceData = this.userMapper.toPersistence(user);
-    
-    if (user.id) {
-      // Update existing user
-      const updated = await this.userModel.findByIdAndUpdate(
-        user.id,
-        persistenceData,
-        { new: true }
-      ).exec();
-      
-      if (!updated) {
-        throw new Error(`User with id ${user.id} not found`);
-      }
-      
-      return updated;
-    } else {
-      // Create new user
-      const newUser = new this.userModel(persistenceData);
-      return newUser.save();
-    }
+  ) {
+    super(userModel);
   }
 
-  async delete(id: string): Promise<boolean> {
-    const result = await this.userModel.deleteOne({ _id: id }).exec();
-    return result.deletedCount > 0;
+  toPersistence(user: User): any {
+    return this.userMapper.toPersistence(user);
   }
 
+  toDomain(document: UserDocument): User {
+    return this.userMapper.toDomain(document);
+  }
+
+  /**
+   * Find user by login
+   * @param login User login
+   * @returns User document or null if not found
+   */
   async findByLogin(login: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ login }).exec();
+    return this.model.findOne({ login }).exec();
   }
 
+  /**
+   * Find user by email
+   * @param email User email
+   * @returns User document or null if not found
+   */
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ email }).exec();
+    return this.model.findOne({ email }).exec();
   }
 }

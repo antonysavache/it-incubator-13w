@@ -4,39 +4,22 @@ import { Model } from 'mongoose';
 import { BlogDocument } from '../schemas/blog.schema';
 import { BlogMapper } from '../mappers/blog.mapper';
 import { Blog } from '../../domain/blog.domain';
+import { BaseCommandRepository } from '../../../../../core/infrastructure/repositories/base-command.repository';
 
 @Injectable()
-export class BlogsCommandRepository {
+export class BlogsCommandRepository extends BaseCommandRepository<BlogDocument, Blog> {
   constructor(
-    @InjectModel('BlogDocument') private blogModel: Model<BlogDocument>,
+    @InjectModel('BlogDocument') protected blogModel: Model<BlogDocument>,
     private blogMapper: BlogMapper
-  ) {}
-
-  async save(blog: Blog): Promise<BlogDocument> {
-    const persistenceData = this.blogMapper.toPersistence(blog);
-    
-    if (blog.id) {
-      // Update existing blog
-      const updated = await this.blogModel.findByIdAndUpdate(
-        blog.id,
-        persistenceData,
-        { new: true }
-      ).exec();
-      
-      if (!updated) {
-        throw new Error(`Blog with id ${blog.id} not found`);
-      }
-      
-      return updated;
-    } else {
-      // Create new blog
-      const newBlog = new this.blogModel(persistenceData);
-      return newBlog.save();
-    }
+  ) {
+    super(blogModel);
   }
 
-  async delete(id: string): Promise<boolean> {
-    const result = await this.blogModel.deleteOne({ _id: id }).exec();
-    return result.deletedCount > 0;
+  toPersistence(blog: Blog): any {
+    return this.blogMapper.toPersistence(blog);
+  }
+
+  toDomain(document: BlogDocument): Blog {
+    return this.blogMapper.toDomain(document);
   }
 }

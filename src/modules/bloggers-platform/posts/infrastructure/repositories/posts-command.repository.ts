@@ -4,44 +4,32 @@ import { Model } from 'mongoose';
 import { PostDocument } from '../schemas/post.schema';
 import { PostMapper } from '../mappers/post.mapper';
 import { Post } from '../../domain/post.domain';
+import { BaseCommandRepository } from '../../../../../core/infrastructure/repositories/base-command.repository';
 
 @Injectable()
-export class PostsCommandRepository {
+export class PostsCommandRepository extends BaseCommandRepository<PostDocument, Post> {
   constructor(
-    @InjectModel('PostDocument') private postModel: Model<PostDocument>,
+    @InjectModel('PostDocument') protected postModel: Model<PostDocument>,
     private postMapper: PostMapper
-  ) {}
-
-  async save(post: Post): Promise<PostDocument> {
-    const persistenceData = this.postMapper.toPersistence(post);
-    
-    if (post.id) {
-      // Update existing post
-      const updated = await this.postModel.findByIdAndUpdate(
-        post.id,
-        persistenceData,
-        { new: true }
-      ).exec();
-      
-      if (!updated) {
-        throw new Error(`Post with id ${post.id} not found`);
-      }
-      
-      return updated;
-    } else {
-      // Create new post
-      const newPost = new this.postModel(persistenceData);
-      return newPost.save();
-    }
+  ) {
+    super(postModel);
   }
 
-  async delete(id: string): Promise<boolean> {
-    const result = await this.postModel.deleteOne({ _id: id }).exec();
-    return result.deletedCount > 0;
+  toPersistence(post: Post): any {
+    return this.postMapper.toPersistence(post);
   }
 
+  toDomain(document: PostDocument): Post {
+    return this.postMapper.toDomain(document);
+  }
+
+  /**
+   * Delete all posts for a specific blog
+   * @param blogId Blog ID
+   * @returns Number of deleted posts
+   */
   async deleteAllByBlogId(blogId: string): Promise<number> {
-    const result = await this.postModel.deleteMany({ blogId }).exec();
+    const result = await this.model.deleteMany({ blogId }).exec();
     return result.deletedCount;
   }
 }
