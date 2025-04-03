@@ -43,7 +43,8 @@ export class PostDocument extends Document {
       dislikesCount: 0,
       myStatus: 'None',
       newestLikes: []
-    }
+    },
+    _id: false // This will prevent Mongoose from adding an _id field to the subdocument
   })
   extendedLikesInfo: {
     likesCount: number;
