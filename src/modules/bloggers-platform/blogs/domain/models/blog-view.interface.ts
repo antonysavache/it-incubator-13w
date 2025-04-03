@@ -3,6 +3,4 @@ export interface BlogView {
   name: string;
   description: string;
   websiteUrl: string;
-  createdAt: Date;
-  isMembership: boolean;
 }

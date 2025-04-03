@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ToResult } from '../../../../../core/infrastructure/result';
 import { BlogsCommandRepository } from '../../infrastructure/repositories/blogs-command.repository';
 import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs-query.repository';
-import { ToResult } from '../../../../../core/infrastructure/result';
 
 @Injectable()
 export class DeleteBlogUseCase {
@@ -10,23 +10,25 @@ export class DeleteBlogUseCase {
     private blogsQueryRepository: BlogsQueryRepository
   ) {}
 
-  async execute(id: string): Promise<ToResult<boolean>> {
+  async execute(id: string): Promise<ToResult<void>> {
     try {
-      const blog = await this.blogsQueryRepository.findById(id);
-
-      if (!blog) {
-        return ToResult.fail(`Блог с ID ${id} не найден`);
+      // First, check if blog exists
+      const blogResult = await this.blogsQueryRepository.getBlogById(id);
+      
+      if (blogResult.isFailure()) {
+        return ToResult.fail(blogResult.error || `Blog with id ${id} not found`);
       }
-
+      
+      // Delete from repository
       const isDeleted = await this.blogsCommandRepository.delete(id);
-
+      
       if (!isDeleted) {
-        return ToResult.fail('Произошла ошибка при удалении блога');
+        return ToResult.fail(`Failed to delete blog with id ${id}`);
       }
-
-      return ToResult.ok(true);
+      
+      return ToResult.ok(undefined);
     } catch (error) {
-      return ToResult.fail(error.message);
+      return ToResult.fail(error.message || 'Unknown error');
     }
   }
 }

@@ -21,7 +21,7 @@ import { CreateBlogDomainDto } from '../domain/dto/create-blog.domain.dto';
 import { GetBlogByIdUseCase } from '../application/use-cases/get-blog.use-case';
 import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
 import { PaginatedResult } from '../../../../core/infrastructure/pagination';
-import { BlogEntity } from '../domain/blog.entity';
+import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from '../domain/dto/update-blog.dto';
 
 @Controller('blogs')
@@ -42,8 +42,6 @@ export class BlogsController {
       throw new NotFoundException(result.error);
     }
 
-    // Гарантируем, что value не undefined - если result.isFailure() == false,
-    // то value должно быть определено
     if (!result.value) {
       throw new BadRequestException('Unexpected error: result value is undefined');
     }
@@ -52,8 +50,7 @@ export class BlogsController {
   }
 
   @Post()
-  async createBlog(@Body() createBlogDto: BlogEntity): Promise<BlogView> {
-    // Преобразуем DTO запроса в доменный DTO
+  async createBlog(@Body() createBlogDto: CreateBlogDto): Promise<BlogView> {
     const domainDto: CreateBlogDomainDto = {
       name: createBlogDto.name,
       description: createBlogDto.description,

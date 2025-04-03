@@ -1,32 +1,33 @@
+import { Injectable } from '@nestjs/common';
 import { CreateBlogDomainDto } from '../../domain/dto/create-blog.domain.dto';
-import { BlogEntity, BlogModelType } from '../../domain/blog.entity';
 import { BlogView } from '../../domain/models/blog-view.interface';
 import { BlogsCommandRepository } from '../../infrastructure/repositories/blogs-command.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
 import { ToResult } from '../../../../../core/infrastructure/result';
+import { Blog } from '../../domain/blog.domain';
+import { BlogMapper } from '../../infrastructure/mappers/blog.mapper';
 
 @Injectable()
 export class CreateBlogUseCase {
   constructor(
     private blogsCommandRepository: BlogsCommandRepository,
-    @InjectModel(BlogEntity.name) private blogModel: BlogModelType,
+    private blogMapper: BlogMapper
   ) {}
 
   async execute(dto: CreateBlogDomainDto): Promise<ToResult<BlogView>> {
     try {
-      const blogData = BlogEntity.createBlog(dto);
-      const blog = new this.blogModel(blogData);
-      const savedBlog = await this.blogsCommandRepository.save(blog);
-
-      const blogView: BlogView = {
-        id: savedBlog._id.toString(),
-        name: savedBlog.name,
-        description: savedBlog.description,
-        websiteUrl: savedBlog.websiteUrl,
-        createdAt: new Date(savedBlog.createdAt),
-        isMembership: savedBlog.isMembership,
-      };
+      // Create a domain entity
+      const blog = Blog.create({
+        name: dto.name,
+        description: dto.description,
+        websiteUrl: dto.websiteUrl
+      });
+      
+      // Save to repository
+      const savedBlogDocument = await this.blogsCommandRepository.save(blog);
+      
+      // Map to domain then to view
+      const savedBlog = this.blogMapper.toDomain(savedBlogDocument);
+      const blogView = this.blogMapper.toView(savedBlog);
 
       return ToResult.ok(blogView);
     } catch (error) {

@@ -1,37 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { BlogsCommandRepository } from '../../infrastructure/repositories/blogs-command.repository';
-import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs-query.repository';
 import { ToResult } from '../../../../../core/infrastructure/result';
 import { CreateBlogDomainDto } from '../../domain/dto/create-blog.domain.dto';
+import { Blog } from '../../domain/blog.domain';
+import { BlogsCommandRepository } from '../../infrastructure/repositories/blogs-command.repository';
+import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs-query.repository';
+import { BlogMapper } from '../../infrastructure/mappers/blog.mapper';
 
 @Injectable()
 export class UpdateBlogUseCase {
   constructor(
     private blogsCommandRepository: BlogsCommandRepository,
-    private blogsQueryRepository: BlogsQueryRepository
+    private blogsQueryRepository: BlogsQueryRepository,
+    private blogMapper: BlogMapper
   ) {}
 
-  async execute(id: string, dto: CreateBlogDomainDto): Promise<ToResult<boolean>> {
+  async execute(id: string, dto: CreateBlogDomainDto): Promise<ToResult<void>> {
     try {
-      const blog = await this.blogsQueryRepository.findById(id);
-
-      if (!blog) {
-        return ToResult.fail(`Блог с ID ${id} не найден`);
+      // First, check if blog exists
+      const blogResult = await this.blogsQueryRepository.getBlogById(id);
+      
+      if (blogResult.isFailure()) {
+        return ToResult.fail(blogResult.error || `Blog with id ${id} not found`);
       }
-
-      const isUpdated = await this.blogsCommandRepository.update(id, {
+      
+      // Create updated domain entity with the same ID
+      const updatedBlog = Blog.create({
         name: dto.name,
         description: dto.description,
         websiteUrl: dto.websiteUrl
-      });
-
-      if (!isUpdated) {
-        return ToResult.fail('Произошла ошибка при обновлении блога');
-      }
-
-      return ToResult.ok(true);
+      }, id);
+      
+      // Save to repository
+      await this.blogsCommandRepository.save(updatedBlog);
+      
+      return ToResult.ok(undefined);
     } catch (error) {
-      return ToResult.fail(error.message);
+      return ToResult.fail(error.message || 'Unknown error');
     }
   }
 }
