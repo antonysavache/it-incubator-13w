@@ -23,11 +23,15 @@ export class UpdateBlogUseCase {
         return ToResult.fail(blogResult.error || `Blog with id ${id} not found`);
       }
       
-      // Create updated domain entity with the same ID
+      const existingBlog = blogResult.value!;
+      
+      // Create updated domain entity with the same ID and createdAt
       const updatedBlog = Blog.create({
         name: dto.name,
         description: dto.description,
-        websiteUrl: dto.websiteUrl
+        websiteUrl: dto.websiteUrl,
+        createdAt: new Date(existingBlog.createdAt),
+        isMembership: existingBlog.isMembership
       }, id);
       
       // Save to repository

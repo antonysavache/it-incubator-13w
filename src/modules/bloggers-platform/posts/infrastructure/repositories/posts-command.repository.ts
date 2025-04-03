@@ -23,6 +23,10 @@ export class PostsCommandRepository extends BaseCommandRepository<PostDocument, 
     return this.postMapper.toDomain(document);
   }
 
+  getEntityId(post: Post): string | undefined {
+    return post.id;
+  }
+
   /**
    * Delete all posts for a specific blog
    * @param blogId Blog ID

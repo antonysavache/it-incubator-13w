@@ -16,12 +16,19 @@ export abstract class BaseCommandRepository<T extends Document, E> {
   abstract toDomain(document: T): E;
 
   /**
+   * Abstract method to get ID from entity
+   * @param entity Domain entity
+   */
+  abstract getEntityId(entity: E): string | undefined;
+
+  /**
    * Save entity (create or update)
    * @param entity Domain entity
    * @returns Saved document
    */
-  async save(entity: E, id?: string): Promise<T> {
+  async save(entity: E): Promise<T> {
     const persistenceData = this.toPersistence(entity);
+    const id = this.getEntityId(entity);
     
     if (id) {
       // Update existing entity

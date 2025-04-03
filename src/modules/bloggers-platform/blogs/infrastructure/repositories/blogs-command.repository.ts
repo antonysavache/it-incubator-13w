@@ -22,4 +22,8 @@ export class BlogsCommandRepository extends BaseCommandRepository<BlogDocument, 
   toDomain(document: BlogDocument): Blog {
     return this.blogMapper.toDomain(document);
   }
+
+  getEntityId(blog: Blog): string | undefined {
+    return blog.id;
+  }
 }

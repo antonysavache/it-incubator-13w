@@ -35,13 +35,14 @@ export class UpdatePostUseCase {
       const blog = blogResult.value!;
       const existingPost = postResult.value!;
       
-      // Create updated domain entity with the same ID
+      // Create updated domain entity with the same ID and preserving createdAt
       const updatedPost = Post.create({
         title: dto.title,
         shortDescription: dto.shortDescription,
         content: dto.content,
         blogId: dto.blogId,
-        blogName: blog.name
+        blogName: blog.name,
+        createdAt: new Date(existingPost.createdAt)
       }, id);
       
       // Save to repository

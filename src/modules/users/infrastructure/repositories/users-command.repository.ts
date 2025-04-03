@@ -23,6 +23,10 @@ export class UsersCommandRepository extends BaseCommandRepository<UserDocument, 
     return this.userMapper.toDomain(document);
   }
 
+  getEntityId(user: User): string | undefined {
+    return user.id;
+  }
+
   /**
    * Find user by login
    * @param login User login
