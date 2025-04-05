@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ToResult } from '../../../../../core/infrastructure/result';
 import { CreatePostDomainDto } from '../../domain/dto/create-post.domain.dto';
-import { Post } from '../../domain/post.domain';
+import { PostDomain } from '../../domain/post.domain';
 import { PostsCommandRepository } from '../../infrastructure/repositories/posts-command.repository';
 import { PostsQueryRepository } from '../../infrastructure/repositories/posts-query.repository';
 import { PostMapper } from '../../infrastructure/mappers/post.mapper';
@@ -33,7 +33,7 @@ export class UpdatePostUseCase {
       const blog = blogResult.value!;
       const existingPost = postResult.value!;
       
-      const updatedPost = Post.create({
+      const updatedPost = PostDomain.create({
         title: dto.title,
         shortDescription: dto.shortDescription,
         content: dto.content,

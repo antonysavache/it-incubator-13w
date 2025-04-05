@@ -12,14 +12,12 @@ export class DeleteBlogUseCase {
 
   async execute(id: string): Promise<ToResult<void>> {
     try {
-      // First, check if blog exists
       const blogResult = await this.blogsQueryRepository.getBlogById(id);
       
       if (blogResult.isFailure()) {
         return ToResult.fail(blogResult.error || `Blog with id ${id} not found`);
       }
       
-      // Delete from repository
       const isDeleted = await this.blogsCommandRepository.delete(id);
       
       if (!isDeleted) {

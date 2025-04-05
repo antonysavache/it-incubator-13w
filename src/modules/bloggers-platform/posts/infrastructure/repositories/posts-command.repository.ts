@@ -3,11 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostDocument } from '../schemas/post.schema';
 import { PostMapper } from '../mappers/post.mapper';
-import { Post } from '../../domain/post.domain';
+import { PostDomain } from '../../domain/post.domain';
 import { BaseCommandRepository } from '../../../../../core/infrastructure/repositories/base-command.repository';
 
 @Injectable()
-export class PostsCommandRepository extends BaseCommandRepository<PostDocument, Post> {
+export class PostsCommandRepository extends BaseCommandRepository<PostDocument, PostDomain> {
   constructor(
     @InjectModel('PostDocument') protected postModel: Model<PostDocument>,
     private postMapper: PostMapper
@@ -15,15 +15,15 @@ export class PostsCommandRepository extends BaseCommandRepository<PostDocument, 
     super(postModel);
   }
 
-  toPersistence(post: Post): any {
+  toPersistence(post: PostDomain): any {
     return this.postMapper.toPersistence(post);
   }
 
-  toDomain(document: PostDocument): Post {
+  toDomain(document: PostDocument): PostDomain {
     return this.postMapper.toDomain(document);
   }
 
-  getEntityId(post: Post): string | undefined {
+  getEntityId(post: PostDomain): string | undefined {
     return post.id;
   }
 

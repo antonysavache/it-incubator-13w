@@ -26,7 +26,9 @@ export class BlogsQueryRepository extends BaseQueryRepository<BlogDocument, View
 
   async getBlogById(id: string): Promise<ToResult<ViewBlogModel>> {
     try {
+      console.log(id);
       const blog = await this.findById(id);
+      console.log(blog);
       
       if (!blog) {
         return ToResult.fail(`Blog with id ${id} not found`);

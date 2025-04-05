@@ -7,7 +7,7 @@ export interface PostProps {
   createdAt?: Date;
 }
 
-export class Post {
+export class PostDomain {
   private readonly _id?: string;
   private readonly _title: string;
   private readonly _shortDescription: string;
@@ -26,8 +26,8 @@ export class Post {
     this._createdAt = props.createdAt || new Date();
   }
 
-  static create(props: PostProps, id?: string): Post {
-    return new Post(props, id);
+  static create(props: PostProps, id?: string): PostDomain {
+    return new PostDomain(props, id);
   }
 
   get id(): string | undefined {

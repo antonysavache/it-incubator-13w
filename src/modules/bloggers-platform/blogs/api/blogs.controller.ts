@@ -19,7 +19,8 @@ import { DeleteBlogUseCase } from '../application/use-cases/delete-blog.use-case
 import { GetBlogByIdUseCase } from '../application/use-cases/get-blog.use-case';
 import { QueryParamsDto } from '../../../../core/dto/query-params.dto';
 import { PaginatedResult } from '../../../../core/infrastructure/pagination';
-import { CreateBlogModel, UpdateBlogModel, ViewBlogModel } from '../models/blog.models';
+import { UpdateBlogModel, ViewBlogModel } from '../models/blog.models';
+import { CreateBlogDto } from './dto/create-blog.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -47,7 +48,7 @@ export class BlogsController {
   }
 
   @Post()
-  async createBlog(@Body() createBlogModel: CreateBlogModel): Promise<ViewBlogModel> {
+  async createBlog(@Body() createBlogModel: CreateBlogDto): Promise<ViewBlogModel> {
     const result = await this.createBlogUseCase.execute(createBlogModel);
 
     if (result.isFailure()) {

@@ -23,6 +23,7 @@ import { PaginatedResult } from '../../../../core/infrastructure/pagination';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { QueryParamsDto } from '../../../../core/dto/query-params.dto';
+import { PostDomain } from '../domain/post.domain';
 
 @Controller('posts')
 export class PostsController {
@@ -57,6 +58,8 @@ export class PostsController {
       content: createPostDto.content,
       blogId: createPostDto.blogId,
     };
+
+    console.log(domainDto);
 
     const result = await this.createPostUseCase.execute(domainDto);
 

@@ -18,5 +18,5 @@ export class CreatePostDto {
 
   @IsString()
   @IsOptional()
-  blogId?: string; // Optional in DTO because it may come from URL param
+  blogId?: string;
 }
