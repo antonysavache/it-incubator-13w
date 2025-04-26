@@ -93,7 +93,9 @@ export class AuthService {
       });
     }
 
-    await this.usersService.confirmEmail(user.id);
+    if (user.id) {
+      await this.usersService.confirmEmail(user.id);
+    }
     
     return;
   }
@@ -117,7 +119,9 @@ export class AuthService {
     const confirmationCode = randomUUID();
     
     // Обновление кода подтверждения
-    await this.usersService.updateConfirmationCode(user.id, confirmationCode);
+    if (user.id) {
+      await this.usersService.updateConfirmationCode(user.id, confirmationCode);
+    }
     
     // Отправка письма с новым кодом подтверждения
     await this.emailService.sendRegistrationEmail(email, confirmationCode);

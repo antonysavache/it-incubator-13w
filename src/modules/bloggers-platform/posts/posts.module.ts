@@ -12,6 +12,7 @@ import { PostDocument, PostSchema } from './infrastructure/schemas/post.schema';
 import { PostsController } from './api/posts.controller';
 import { PostMapper } from './infrastructure/mappers/post.mapper';
 import { BlogsRepositoryModule } from '../blogs-repository.module';
+import { CoreModule } from '../../../core/core.module';
 
 const useCases = [
   CreatePostUseCase,
@@ -36,7 +37,8 @@ const mappers = [
     MongooseModule.forFeature([
       { name: 'PostDocument', schema: PostSchema }
     ]),
-    BlogsRepositoryModule
+    BlogsRepositoryModule,
+    CoreModule
   ],
   controllers: [PostsController],
   providers: [

@@ -24,7 +24,7 @@ export class UsersRepository {
         confirmationCode: savedUser.confirmationCode,
         emailConfirmed: savedUser.emailConfirmed
       },
-      savedUser._id.toString()
+      savedUser._id ? savedUser._id.toString() : undefined
     );
   }
 
@@ -41,7 +41,7 @@ export class UsersRepository {
         confirmationCode: user.confirmationCode,
         emailConfirmed: user.emailConfirmed
       },
-      user._id.toString()
+      user._id ? user._id.toString() : undefined
     );
   }
 
@@ -61,7 +61,7 @@ export class UsersRepository {
         confirmationCode: user.confirmationCode,
         emailConfirmed: user.emailConfirmed
       },
-      user._id.toString()
+      user._id ? user._id.toString() : undefined
     );
   }
 
@@ -78,7 +78,7 @@ export class UsersRepository {
         confirmationCode: user.confirmationCode,
         emailConfirmed: user.emailConfirmed
       },
-      user._id.toString()
+      user._id ? user._id.toString() : undefined
     );
   }
 
@@ -118,7 +118,7 @@ export class UsersRepository {
           confirmationCode: user.confirmationCode,
           emailConfirmed: user.emailConfirmed
         },
-        user._id.toString()
+        user._id ? user._id.toString() : undefined
       )
     );
     

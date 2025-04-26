@@ -1,6 +1,6 @@
 import { Model, Document } from 'mongoose';
 import { QueryParamsDto } from '../../dto/query-params.dto';
-import { PaginatedResult } from '../pagination';
+import { PaginatedResult, PaginatedResultImpl } from '../pagination';
 import { QueryParamsService } from '../../services/query-params.service';
 
 export abstract class BaseQueryRepository<T extends Document, V> {
@@ -24,7 +24,8 @@ export abstract class BaseQueryRepository<T extends Document, V> {
     searchFields: string[] = [],
     additionalFilter: any = {}
   ): Promise<PaginatedResult<V>> {
-    const { pageNumber, pageSize } = params;
+    const pageNumber = params.pageNumber || 1;
+    const pageSize = params.pageSize || 10;
     const skip = this.queryParamsService.calculateSkip(params);
     const sortOptions = this.queryParamsService.getSortOptions(params);
 
@@ -43,10 +44,10 @@ export abstract class BaseQueryRepository<T extends Document, V> {
 
     const mappedItems = items.map(item => this.mapToView(item));
 
-    return new PaginatedResult({
+    return new PaginatedResultImpl({
       items: mappedItems,
       totalCount,
-      page: pageNumber,
+      pageNumber,
       pageSize,
     });
   }

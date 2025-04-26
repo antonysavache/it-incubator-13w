@@ -126,7 +126,7 @@ export class UsersController {
   }
 
   private validateCreateUserDto(createUserDto: CreateUserDto): void {
-    const errors = [];
+    const errors: Array<{ message: string; field: string }> = [];
 
     if (createUserDto.login && (createUserDto.login.length < 3 || createUserDto.login.length > 10)) {
       errors.push({ message: 'login must be between 3 and 10 characters', field: 'login' });

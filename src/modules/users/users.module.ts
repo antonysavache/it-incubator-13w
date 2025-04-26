@@ -11,6 +11,7 @@ import { UsersController } from './api/users.controller';
 import { UserMapper } from './infrastructure/mappers/user.mapper';
 import { UsersService } from './application/users.service';
 import { UsersRepository } from './infrastructure/users.repository';
+import { CoreModule } from '../../core/core.module';
 
 const useCases = [
   CreateUserUseCase,
@@ -33,7 +34,8 @@ const mappers = [
   imports: [
     MongooseModule.forFeature([
       { name: UserDocument.name, schema: UserSchema }
-    ])
+    ]),
+    CoreModule
   ],
   controllers: [UsersController],
   providers: [

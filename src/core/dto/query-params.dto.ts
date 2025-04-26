@@ -1,6 +1,11 @@
 import { IsOptional, IsNumber, Min, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export enum SortDirection {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
 export class QueryParamsDto {
   @IsOptional()
   @IsNumber()
@@ -20,7 +25,7 @@ export class QueryParamsDto {
 
   @IsOptional()
   @IsString()
-  sortDirection?: 'asc' | 'desc' = 'desc';
+  sortDirection?: SortDirection = SortDirection.Desc;
 
   @IsOptional()
   @IsString()
