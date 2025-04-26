@@ -3,6 +3,8 @@ export interface UserProps {
   email: string;
   passwordHash: string;
   createdAt?: Date;
+  confirmationCode?: string;
+  emailConfirmed?: boolean;
 }
 
 export class User {
@@ -11,6 +13,8 @@ export class User {
   private readonly _email: string;
   private readonly _passwordHash: string;
   private readonly _createdAt: Date;
+  private readonly _confirmationCode: string | null;
+  private readonly _emailConfirmed: boolean;
 
   private constructor(props: UserProps, id?: string) {
     this._id = id;
@@ -18,6 +22,8 @@ export class User {
     this._email = props.email;
     this._passwordHash = props.passwordHash;
     this._createdAt = props.createdAt || new Date();
+    this._confirmationCode = props.confirmationCode || null;
+    this._emailConfirmed = props.emailConfirmed !== undefined ? props.emailConfirmed : false;
   }
 
   static create(props: UserProps, id?: string): User {
@@ -44,12 +50,22 @@ export class User {
     return this._createdAt;
   }
 
+  get confirmationCode(): string | null {
+    return this._confirmationCode;
+  }
+
+  get emailConfirmed(): boolean {
+    return this._emailConfirmed;
+  }
+
   toObject() {
     return {
       id: this._id,
       login: this._login,
       email: this._email,
-      createdAt: this._createdAt
+      createdAt: this._createdAt,
+      confirmationCode: this._confirmationCode,
+      emailConfirmed: this._emailConfirmed
     };
   }
 }

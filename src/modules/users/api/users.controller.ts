@@ -10,6 +10,8 @@ import {
   Param,
   Post,
   Query,
+  UnauthorizedException,
+  Headers,
 } from '@nestjs/common';
 import { CreateUserUseCase } from '../application/use-cases/create-user.use-case';
 import { GetAllUsersUseCase } from '../application/use-cases/get-all-users.use-case';
@@ -20,6 +22,7 @@ import { GetUserByIdUseCase } from '../application/use-cases/get-user.use-case';
 import { PaginatedResult } from '../../../core/infrastructure/pagination';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryParamsDto } from '../../../core/dto/query-params.dto';
+import { UsersService } from '../application/users.service';
 
 @Controller('users')
 export class UsersController {
@@ -28,6 +31,7 @@ export class UsersController {
     private getAllUsersUseCase: GetAllUsersUseCase,
     private getUserByIdUseCase: GetUserByIdUseCase,
     private deleteUserUseCase: DeleteUserUseCase,
+    private usersService: UsersService,
   ) {}
 
   @Get()
@@ -46,7 +50,18 @@ export class UsersController {
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<UserView> {
+  async createUser(
+    @Headers('authorization') authHeader: string,
+    @Body() createUserDto: CreateUserDto
+  ): Promise<UserView> {
+    // Проверка Basic Auth
+    if (!authHeader || !this.validateBasicAuth(authHeader)) {
+      throw new UnauthorizedException();
+    }
+
+    // Проверка валидации
+    this.validateCreateUserDto(createUserDto);
+
     const domainDto: CreateUserDomainDto = {
       login: createUserDto.login,
       email: createUserDto.email,
@@ -83,11 +98,46 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('id') id: string): Promise<void> {
+  async deleteUser(
+    @Headers('authorization') authHeader: string,
+    @Param('id') id: string
+  ): Promise<void> {
+    // Проверка Basic Auth
+    if (!authHeader || !this.validateBasicAuth(authHeader)) {
+      throw new UnauthorizedException();
+    }
+
     const result = await this.deleteUserUseCase.execute(id);
 
     if (result.isFailure()) {
       throw new NotFoundException(result.error);
+    }
+  }
+
+  private validateBasicAuth(authHeader: string): boolean {
+    try {
+      const base64Credentials = authHeader.split(' ')[1];
+      const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+      const [username, password] = credentials.split(':');
+      return username === 'admin' && password === 'qwerty';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  private validateCreateUserDto(createUserDto: CreateUserDto): void {
+    const errors = [];
+
+    if (createUserDto.login && (createUserDto.login.length < 3 || createUserDto.login.length > 10)) {
+      errors.push({ message: 'login must be between 3 and 10 characters', field: 'login' });
+    }
+
+    if (createUserDto.password && (createUserDto.password.length < 6 || createUserDto.password.length > 20)) {
+      errors.push({ message: 'password must be between 6 and 20 characters', field: 'password' });
+    }
+
+    if (errors.length > 0) {
+      throw new BadRequestException({ errorsMessages: errors });
     }
   }
 }

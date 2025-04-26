@@ -7,18 +7,7 @@ import { CoreModule } from './core/core.module';
 import { BlogsModule } from './modules/bloggers-platform/bloggers-platform.module';
 import { UsersModule } from './modules/users/users.module';
 import { PostsModule } from './modules/bloggers-platform/posts/posts.module';
-
-@Module({
-  imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://admin:admin@lessons.x4ym2.mongodb.net/?retryWrites=true&w=majority&appName=lessons',
-    ),
-    TestingModule,
-    CoreModule,
-    BlogsModule,
-    UsersModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
+import { AuthModule } from './modules/auth/auth.module';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { HttpExceptionFilter } from './core/filters/http-exception.filter';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';

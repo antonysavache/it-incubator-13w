@@ -9,6 +9,8 @@ import { UsersQueryRepository } from './infrastructure/repositories/users-query.
 import { UserDocument, UserSchema } from './infrastructure/schemas/user.schema';
 import { UsersController } from './api/users.controller';
 import { UserMapper } from './infrastructure/mappers/user.mapper';
+import { UsersService } from './application/users.service';
+import { UsersRepository } from './infrastructure/users.repository';
 
 const useCases = [
   CreateUserUseCase,
@@ -19,7 +21,8 @@ const useCases = [
 
 const repositories = [
   UsersCommandRepository,
-  UsersQueryRepository
+  UsersQueryRepository,
+  UsersRepository
 ];
 
 const mappers = [
@@ -29,18 +32,20 @@ const mappers = [
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'UserDocument', schema: UserSchema }
+      { name: UserDocument.name, schema: UserSchema }
     ])
   ],
   controllers: [UsersController],
   providers: [
     ...mappers,
     ...repositories,
-    ...useCases
+    ...useCases,
+    UsersService
   ],
   exports: [
     ...repositories,
-    ...useCases
+    ...useCases,
+    UsersService
   ]
 })
 export class UsersModule {}
